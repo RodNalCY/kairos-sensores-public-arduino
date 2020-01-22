@@ -1,0 +1,2 @@
+# kairos-sensores-public
+AQUI ESTAN LOS SENSORES PARA EL PUBLICO EN GENERAL
