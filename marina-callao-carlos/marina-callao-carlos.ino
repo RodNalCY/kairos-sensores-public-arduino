@@ -16,7 +16,7 @@ PMS::DATA data;
 ////////////////////////DEFINIMOS//EL//PIN//DEL//SENSOR//DHT22/////////////////////////////////
 #include "DHT.h" //cargamos la librería DHT
 #define DHTPIN D1 //Seleccionamos el pin en el que se conectará el sensor
-#define DHTTYPE DHT22 //Se selecciona el DHT22(hay otros DHT)
+#define DHTTYPE DHT11 //Se selecciona el DHT22(hay otros DHT)
 DHT dht(DHTPIN, DHTTYPE); //Se inicia una variable que será usada por Arduino para comunicarse con el sensor
 //////////////////////////CONFIGURACION//DEL//SERVIDOR////////////////////////////////////////
 // /pm25/aire-lima-2.5/neodatokairosdate/registrarMedidasDateKairos;
@@ -27,7 +27,7 @@ const uint16_t port = 80;  // HTTP PORT
 //////////////////////DEFINIMOS//EL//CODIGO//DEL//SENSOR//RESPECTIVAMENTE//////////////////////
 String codigoPM = "CALLAOSNMASURPM25";
 String codigoDT = "CALLAOSNMASURTEMP";
-String codigoDH = "CALLAOSNMASURHUME ";
+String codigoDH = "CALLAOSNMASURHUME";
 String stateCorrectOperation = "1";
 String stateWithoutInternet  = "2";
 String stateDamageddevice    = "3";
@@ -81,6 +81,107 @@ const char index_html[] PROGMEM = R"rawliteral(
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <title>KairOS</title>
+<style>
+body{
+  background-color: #E6C00B;
+  margin:0;
+}
+.form{
+  width:660px;
+  height:440px;
+  background:#e6e6e6;
+  border-radius:8px;
+  box-shadow:0 0 40px -10px #000;
+  margin:calc(50vh - 220px) auto;padding:20px 30px;
+  max-width:calc(100vw - 40px);
+  box-sizing:border-box;
+  font-family:'Montserrat',sans-serif;
+  position:relative;
+}
+
+h2{
+  margin:10px 0;
+  padding-bottom:10px;
+  width:260px;
+  color:#78788c;
+  border-bottom:3px solid #78788c
+}
+
+h4{
+  color:#78788c;
+}
+.mensaje{  
+  font-family:'Montserrat';
+  color:#78788c;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  box-sizing:border-box;
+  background:none;
+  outline:none;
+  resize:none;
+  border:0;
+  font-family:'Montserrat',sans-serif;transition:all .3s;
+  border-bottom:2px solid #bebed2;
+}
+
+input:focus{
+  border-bottom:3px solid #78788c;
+}
+p:before{
+  content:attr(type);
+  display:block;
+  margin:28px 0 0;
+  font-size:14px;
+  color:#5a5a5a;
+}
+.enviar{
+  float:right;
+  padding:8px 12px;
+  margin:8px 0 0;
+  font-family:'Montserrat',sans-serif;
+  border:2px solid #78788c;
+  background:0;
+  color:#5a5a6e;
+  cursor:pointer;
+  transition:all .3s;
+  border-radius: 5px;
+}
+.enviar:hover{
+  background:#78788c;
+  color:#fff
+}
+
+.contacto{
+  content:'Hi';
+  position:absolute;
+  bottom:-15px;
+  right:-20px;
+  background:#50505a;
+  color:#fff;
+  width:330px;
+  padding:16px 4px 16px 0;
+  border-radius:6px;
+  font-size:13px;
+  box-shadow:10px 10px 40px -14px #000;
+}
+span{
+  margin:0 5px 0 15px;
+}
+
+.card {
+  box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 70%;
+  padding: 35px;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+</style>
 <script type="text/javascript">
  function validarPasswd () {   
   var p1 = document.getElementById("password").value;
@@ -115,28 +216,58 @@ const char index_html[] PROGMEM = R"rawliteral(
 </script>
 </head>
 <body>
-<div class="container mt-4">
+<form class="form" onSubmit="return validarPasswd()" action="/get">  
+  <table>
+    <tr>
+       <td>
+        <div class="card">       
+            <h4>⌨ Panel de Configuración</h4> 
+            <p class="mensaje">
+              ⚡ 
+              Bienvenid@, en el siguiente formulario escriba correctamente sus credenciales de WiFi.
+              <br><br>
+              Gracias por colaborar con PM 2.5, usted ahora podra monitorear la calidad de aire en su zona.
 
-<h2>Panel de administraci&oacute;n KairOS</h2>
-<p>En este panel puede cambiar sus credenciales al cambiar de red.</p>
-<form onSubmit="return validarPasswd()" action="/get">
-  <fieldset>
-    <legend>cambie la contrasenia:</legend>
-    SSID WIFI:<br>
-    <input type="text" name="ssid" id="ssid" placeholder="ssid">
-    <br>
-    PASS WIFI:<br>
-    <input type="text" name="password" id="password" placeholder="Password">
-    <br>
-    Confirm PASS WIFI:<br>
-    <input type="text" name="passwordconf" id="passwordconf" placeholder="Conf Pass">
-    <br><br>
-    <input type="submit" value="Submit">
-  </fieldset>
+            </p> 
+          </div>        
+       </td>
+       
+       <td>
+        <h2>Air Quality ☁ KairOS </h2>
+        <p type="SSID:">
+          <input type="text" 
+          name="ssid" 
+          id="ssid" 
+          placeholder="✎ Ingrese su SSID"></input>
+        </p>
+
+        <p type="Password:">
+          <input type="text" 
+          name="password" 
+          id="password" 
+          placeholder="✎ Ingrese su password"></input>
+        </p>
+
+        <p type="Password:">
+          <input type="text" 
+          name="passwordconf" 
+          id="passwordconf" 
+          placeholder=" ✎Vuelva a escribir su password ">
+        </input>
+        </p>
+        <input class="enviar" type="submit" value="Enviar">
+       </td>
+    </tr>
+  </table>
+  <div class="contacto">
+    <span class="fa fa-phone"></span>☏ (+51) 912 101 970
+    <span class="fa fa-envelope-o"></span>✉ rcabello@kairos.com.pe
+  </div>
 </form>
+</body></html>
 
-</div>
-</body></html>)rawliteral";
+
+)rawliteral";
 /////////////////////////////////////////////////////////////////////////////////////////
 void notFound(AsyncWebServerRequest *request) {
   request->send(404, "text/plain", "Not found");
@@ -187,12 +318,12 @@ void setup() {
   WiFi.mode(WIFI_STA);
   Serial.println();
 
-  Serial.print("Setting AP-KairOSCALLAOSUR configuration ... ");
+  Serial.print("Setting AP-KairOS-Callao configuration ... ");
   Serial.println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
-  Serial.print("Setting AP-KairOSCALLAOSUR ... ");
-  Serial.println(WiFi.softAP("AP-KairOSCALLAOSUR", "987654321") ? "Ready" : "Failed!");
+  Serial.print("Setting AP-KairOS-Callao ... ");
+  Serial.println(WiFi.softAP("AP-KairOS-Callao", "123456789") ? "Ready" : "Failed!");
 
-  Serial.print("AP-KairOSCALLAOSUR IP address = ");
+  Serial.print("AP-KairOS-Callao IP address = ");
   Serial.println(WiFi.softAPIP());
   /////////////////////////////////////////////////////////////////////////////////////////////
   // Send web page with input fields to client
@@ -239,9 +370,7 @@ void setup() {
       Serial.println(WiFi.localIP());
     }
     /////////////////////////////////////////////////////////////////////////////////////////////
-    request->send(200, "text/html", "HTTP GET request sent to your ESP on input field ("
-                  + inputParamSSID + " - " + inputParamPASS + ") with value: " + gettingSSID + " - " + gettingPASS +
-                  "<br><a href=\"/\">Return to Home Page</a>");
+    request->send(200, "text/html", "<script>alert('Gracias'); window.location.href = '/';</script>");
   });
   /////////////////////////////////////////////////////////////////////////////////////////////
   server.onNotFound(notFound);
@@ -261,7 +390,7 @@ void setup() {
   dht.begin(); //Se inicia el sensor de DHT22
   ////////////////////////////////////////////////////////////////////////////////////////////
   timeClient.begin();
-  setTime(timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds(), 2, 1, 2019);
+  setTime(timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds(), 4, 2, 2020);
   timeClient.update();
 }
 
